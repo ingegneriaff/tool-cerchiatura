@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#102d4f">
 <title>Quanto costa una cerchiatura?</title>
+ <link rel="manifest" href="./manifest.json"> 
 <style>
 :root{--navy:#102d4f;--blue:#1e5f8f;--ink:#182532;--muted:#687789;--bg:#f3f6f8;--line:#d9e1e8;--card:#fff;--soft:#eef5f9}
 *{box-sizing:border-box}html{width:100%;min-height:100%}
@@ -138,5 +139,21 @@ if(document.readyState==="loading"){
   inizializzaTool();
 }
 </script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("./sw.js")
+      .then(function() {
+        console.log("Service Worker registrato");
+      })
+      .catch(function(error) {
+        console.log("Errore Service Worker:", error);
+      });
+  });
+}
+</script>
+
+
+  
 </body>
 </html>
