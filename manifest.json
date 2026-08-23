@@ -1,0 +1,10 @@
+{
+  "name": "Tool Cerchiatura",
+  "short_name": "Cerchiatura",
+  "description": "Stima preliminare del costo di una cerchiatura strutturale.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#102d4f",
+  "orientation": "portrait"
+}
