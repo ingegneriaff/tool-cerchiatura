@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#102d4f">
+<title>Quanto costa una cerchiatura?</title>
+<style>
+:root{--navy:#102d4f;--blue:#1e5f8f;--ink:#182532;--muted:#687789;--bg:#f3f6f8;--line:#d9e1e8;--card:#fff;--soft:#eef5f9}
+*{box-sizing:border-box}
+html{width:100%;min-height:100%}
+body{margin:0;width:100%;min-height:100vh;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.hero{background:var(--navy);color:#fff;padding:34px 20px 42px}.wrap{width:min(920px,94%);margin:0 auto}.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;font-weight:800;opacity:.72}
+h1{font-size:clamp(2rem,6vw,3.3rem);line-height:1.02;margin:9px 0}.hero p{max-width:700px;color:#d9e5ef;line-height:1.5;margin:0}
+main{padding:24px 0 50px}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 30px rgba(16,45,79,.07)}
+h2{font-size:1.15rem;margin:0 0 20px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{min-width:0}
+label{display:block;font-weight:750;margin-bottom:7px}
+input,select{width:100%;height:50px;padding:0 14px;border:1px solid #cbd5de;border-radius:12px;background:#fff;color:var(--ink);font:inherit;font-size:16px;-webkit-appearance:none;appearance:none}
+input:focus,select:focus{outline:3px solid #dcecf7;border-color:var(--blue)}
+.help{color:var(--muted);font-size:.78rem;margin-top:6px}
+.calculate{width:100%;margin-top:20px;min-height:52px;border:0;border-radius:13px;background:var(--blue);color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.calculate:active{transform:translateY(1px)}
+.result{margin-top:22px;background:var(--navy);border-radius:18px;padding:25px;color:#fff}.result small{text-transform:uppercase;letter-spacing:.1em;font-weight:800;opacity:.7}
+.price{font-size:clamp(2.5rem,10vw,4.5rem);font-weight:850;letter-spacing:-.055em;line-height:1.05;margin:6px 0 4px}
+.result p{margin:0;color:#d5e2ec;font-size:.9rem}.meta{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.16);display:flex;justify-content:space-between;gap:12px;color:#dce7ef;font-size:.83rem}
+.note{margin-top:18px;background:var(--soft);border:1px solid #d9e7ef;border-radius:14px;padding:16px;line-height:1.5;font-size:.88rem}.note strong{color:var(--navy)}
+.disclaimer{color:var(--muted);font-size:.76rem;line-height:1.5;margin:16px 2px 0}footer{text-align:center;color:var(--muted);font-size:.75rem;padding:0 0 28px}
+@media(max-width:650px){.hero{padding:27px 15px 32px}.wrap{width:min(96%,920px)}main{padding-top:14px}.card{padding:17px;border-radius:17px}.grid{grid-template-columns:1fr;gap:14px}.meta{flex-direction:column}.price{font-size:clamp(2.5rem,16vw,4rem)}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap"><div class="kicker">Strumento gratuito · stima preliminare</div><h1>Quanto può costare una cerchiatura?</h1><p>Inserisci le caratteristiche essenziali dell'apertura e ottieni in pochi secondi una stima indicativa del costo di realizzazione.</p></div></header>
+<main><div class="wrap"><section class="card">
+<h2>Inserisci i dati dell'intervento</h2>
+<div class="grid">
+<div class="field"><label for="width">Larghezza apertura (cm)</label><input id="width" type="number" inputmode="numeric" min="1" step="1" value="150"><div class="help">Misura netta dell'apertura.</div></div>
+<div class="field"><label for="height">Altezza apertura (cm)</label><input id="height" type="number" inputmode="numeric" min="1" step="1" value="210"><div class="help">Misura netta dell'apertura.</div></div>
+<div class="field"><label for="masonry">Tipologia di muratura</label><select id="masonry"><option value="forato">Laterizio forato</option><option value="pieno" selected>Laterizio pieno</option><option value="pietrame">Pietrame</option></select></div>
+<div class="field"><label for="mode">Modalità di realizzazione</label><select id="mode"><option value="saldatura" selected>Cerchiatura saldata in cantiere</option><option value="bullonata">Cerchiatura imbullonata in cantiere</option></select></div>
+<div class="field"><label for="restricted">Spazi ristretti o scomodi?</label><select id="restricted"><option value="no" selected>No</option><option value="si">Sì</option></select></div>
+</div>
+<button type="button" class="calculate" id="calculateBtn">Calcola la stima</button>
+<div class="result" aria-live="polite"><small>Stima preliminare</small><div class="price" id="total">€ —</div><p>Costo indicativo di realizzazione dell'opera.</p><div class="meta"><span id="sizeInfo">Apertura: —</span><span id="steelInfo">Acciaio stimato: —</span></div></div>
+<div class="note"><strong>Importante:</strong> il peso e la tipologia dei profili non vengono determinati da questo strumento. Devono essere definiti mediante progettazione e verifica strutturale.</div>
+<p class="disclaimer">Stima parametrica preliminare. Non costituisce computo metrico, progetto strutturale, preventivo d'impresa o offerta economica. Non comprende progettazione strutturale, pratiche edilizie, direzione lavori e altri compensi professionali.</p>
+</section></div></main>
+<footer>Parametri economici aggiornabili · versione 2.1</footer>
+<script>
+const PARAM={acciaioMinKg:200,acciaioMaxKg:600,larghezzaMinCm:100,larghezzaMaxCm:220,costoKg:{saldatura:7,bullonata:8},maggiorazioneSpaziKg:1,demolizioneM3:{forato:110,pieno:130,pietrame:170},rimozioneIntonaco:120,puntellamento:100,ripristini:500,spessoreMuraturaM:.30};
+const getElement=id=>document.getElementById(id);
+function euro(value){return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(value)}
+function numero(value){if(value===null||value===undefined)return NaN;let v=String(value).trim();if(v==="")return NaN;return Number(v.replace(",","."))}
+function acciaioStimato(larghezza){if(larghezza<=PARAM.larghezzaMinCm)return PARAM.acciaioMinKg;if(larghezza>=PARAM.larghezzaMaxCm)return PARAM.acciaioMaxKg;return PARAM.acciaioMinKg+(larghezza-PARAM.larghezzaMinCm)*(PARAM.acciaioMaxKg-PARAM.acciaioMinKg)/(PARAM.larghezzaMaxCm-PARAM.larghezzaMinCm)}
+function calcola(){
+ try{
+  const width=numero(getElement("width").value),height=numero(getElement("height").value);
+  if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0){getElement("total").textContent="€ —";getElement("sizeInfo").textContent="Inserisci larghezza e altezza";getElement("steelInfo").textContent="Acciaio stimato: —";return}
+  const kg=acciaioStimato(width),costoKg=PARAM.costoKg[getElement("mode").value],extraSpazi=getElement("restricted").value==="si"?PARAM.maggiorazioneSpaziKg:0;
+  const carpenteria=kg*(costoKg+extraSpazi);
+  const volumeDemolizione=(width/100)*(height/100)*PARAM.spessoreMuraturaM;
+  const demolizione=volumeDemolizione*PARAM.demolizioneM3[getElement("masonry").value];
+  const totale=carpenteria+demolizione+PARAM.rimozioneIntonaco+PARAM.puntellamento+PARAM.ripristini;
+  getElement("total").textContent=euro(totale);
+  getElement("sizeInfo").textContent="Apertura: "+width+" × "+height+" cm";
+  getElement("steelInfo").textContent="Acciaio stimato: "+Math.round(kg)+" kg";
+ }catch(error){console.error("Errore nel calcolo:",error);getElement("total").textContent="Errore";getElement("sizeInfo").textContent="Controlla i dati inseriti";getElement("steelInfo").textContent="Acciaio stimato: —"}
+}
+function inizializzaTool(){
+ ["width","height","masonry","mode","restricted"].forEach(function(id){const element=getElement(id);if(!element)return;element.addEventListener("input",calcola,false);element.addEventListener("change",calcola,false);element.addEventListener("blur",calcola,false)});
+ const button=getElement("calculateBtn");if(button)button.addEventListener("click",function(event){event.preventDefault();calcola()},false);
+ calcola();
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inizializzaTool,false);else inizializzaTool();
+</script>
+</body>
+</html>
