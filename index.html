@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#102d4f">
+<link rel="manifest" href="./manifest.json">
 <title>Quanto costa una cerchiatura?</title>
- <link rel="manifest" href="./manifest.json"> 
 <style>
 :root{--navy:#102d4f;--blue:#1e5f8f;--ink:#182532;--muted:#687789;--bg:#f3f6f8;--line:#d9e1e8;--card:#fff;--soft:#eef5f9}
 *{box-sizing:border-box}html{width:100%;min-height:100%}
@@ -42,7 +42,7 @@ input:focus,select:focus{outline:3px solid #dcecf7;border-color:var(--blue)}.hel
 <div class="note"><strong>Importante:</strong> il peso e la tipologia dei profili non vengono determinati da questo strumento. Devono essere definiti mediante progettazione e verifica strutturale.</div>
 <p class="disclaimer">Stima parametrica preliminare. Non costituisce computo metrico, progetto strutturale, preventivo d'impresa o offerta economica. Non comprende progettazione strutturale, pratiche edilizie, direzione lavori e altri compensi professionali.</p>
 </section></div></main>
-<footer>Parametri economici aggiornabili · versione 2.2</footer>
+<footer>Parametri economici aggiornabili · versione 2.3</footer>
 <script>
 const PARAM={
   costoRiferimento:3410,
@@ -52,108 +52,40 @@ const PARAM={
   acciaioMinKg:200,
   acciaioMaxKg:600,
   larghezzaMinCm:100,
-  larghezzaMaxCm:220
+  larghezzaMaxCm:220,
+  costoKgSaldatura:7,
+  costoKgBullonata:8,
+  maggiorazioneSpaziKg:1
 };
-
 const getElement=id=>document.getElementById(id);
-
-function euro(value){
-  return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(value);
-}
-
-function numero(value){
-  if(value===null||value===undefined)return NaN;
-  let v=String(value).trim();
-  if(v==="")return NaN;
-  return Number(v.replace(",","."));
-}
-
-function acciaioStimato(larghezza){
-  if(larghezza<=PARAM.larghezzaMinCm)return PARAM.acciaioMinKg;
-  if(larghezza>=PARAM.larghezzaMaxCm)return PARAM.acciaioMaxKg;
-  return PARAM.acciaioMinKg+
-    (larghezza-PARAM.larghezzaMinCm)*
-    (PARAM.acciaioMaxKg-PARAM.acciaioMinKg)/
-    (PARAM.larghezzaMaxCm-PARAM.larghezzaMinCm);
-}
-
+function euro(value){return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(value)}
+function numero(value){if(value===null||value===undefined)return NaN;let v=String(value).trim();if(v==="")return NaN;return Number(v.replace(",","."))}
+function acciaioStimato(larghezza){if(larghezza<=PARAM.larghezzaMinCm)return PARAM.acciaioMinKg;if(larghezza>=PARAM.larghezzaMaxCm)return PARAM.acciaioMaxKg;return PARAM.acciaioMinKg+(larghezza-PARAM.larghezzaMinCm)*(PARAM.acciaioMaxKg-PARAM.acciaioMinKg)/(PARAM.larghezzaMaxCm-PARAM.larghezzaMinCm)}
 function calcola(){
-  try{
-    const width=numero(getElement("width").value);
-    const height=numero(getElement("height").value);
-
-    if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0){
-      getElement("total").textContent="€ —";
-      getElement("sizeInfo").textContent="Inserisci larghezza e altezza";
-      getElement("steelInfo").textContent="Acciaio stimato: —";
-      return;
-    }
-
-    const areaM2=(width/100)*(height/100);
-
-    const costoDimensionale=
-      PARAM.costoRiferimento*
-      Math.pow(areaM2/PARAM.areaRiferimentoM2,PARAM.esponenteDimensionale);
-
-    const coeffMuratura=
-      PARAM.coefficienteMuratura[getElement("masonry").value];
-
-    const totale=costoDimensionale*coeffMuratura;
-    const kg=acciaioStimato(width);
-
-    getElement("total").textContent=euro(totale);
-    getElement("sizeInfo").textContent="Apertura: "+width+" × "+height+" cm";
-    getElement("steelInfo").textContent="Acciaio stimato: "+Math.round(kg)+" kg";
-
-  }catch(error){
-    console.error("Errore nel calcolo:",error);
-    getElement("total").textContent="Errore";
-    getElement("sizeInfo").textContent="Controlla i dati inseriti";
-    getElement("steelInfo").textContent="Acciaio stimato: —";
-  }
+ try{
+  const width=numero(getElement("width").value),height=numero(getElement("height").value);
+  if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0){getElement("total").textContent="€ —";getElement("sizeInfo").textContent="Inserisci larghezza e altezza";getElement("steelInfo").textContent="Acciaio stimato: —";return}
+  const areaM2=(width/100)*(height/100);
+  const costoDimensionale=PARAM.costoRiferimento*Math.pow(areaM2/PARAM.areaRiferimentoM2,PARAM.esponenteDimensionale);
+  const kg=acciaioStimato(width);
+  const costoKgModalita=getElement("mode").value==="bullonata"?PARAM.costoKgBullonata:PARAM.costoKgSaldatura;
+  const differenzialeModalita=costoKgModalita-PARAM.costoKgSaldatura;
+  const differenzialeSpazi=getElement("restricted").value==="si"?PARAM.maggiorazioneSpaziKg:0;
+  const maggiorazioneRealizzazione=kg*(differenzialeModalita+differenzialeSpazi);
+  const coeffMuratura=PARAM.coefficienteMuratura[getElement("masonry").value];
+  const totale=(costoDimensionale+maggiorazioneRealizzazione)*coeffMuratura;
+  getElement("total").textContent=euro(totale);
+  getElement("sizeInfo").textContent="Apertura: "+width+" × "+height+" cm";
+  getElement("steelInfo").textContent="Acciaio stimato: "+Math.round(kg)+" kg";
+ }catch(error){console.error("Errore nel calcolo:",error);getElement("total").textContent="Errore";getElement("sizeInfo").textContent="Controlla i dati inseriti";getElement("steelInfo").textContent="Acciaio stimato: —"}
 }
-
 function inizializzaTool(){
-  ["width","height","masonry","mode","restricted"].forEach(function(id){
-    const element=getElement(id);
-    if(!element)return;
-    element.addEventListener("input",calcola,false);
-    element.addEventListener("change",calcola,false);
-    element.addEventListener("blur",calcola,false);
-  });
-
-  const button=getElement("calculateBtn");
-  if(button){
-    button.addEventListener("click",function(event){
-      event.preventDefault();
-      calcola();
-    },false);
-  }
-
-  calcola();
+ ["width","height","masonry","mode","restricted"].forEach(function(id){const element=getElement(id);if(!element)return;element.addEventListener("input",calcola,false);element.addEventListener("change",calcola,false);element.addEventListener("blur",calcola,false)});
+ const button=getElement("calculateBtn");if(button)button.addEventListener("click",function(event){event.preventDefault();calcola()},false);
+ calcola();
 }
-
-if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded",inizializzaTool,false);
-}else{
-  inizializzaTool();
-}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inizializzaTool,false);else inizializzaTool();
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(error){console.log("Errore Service Worker:",error)})})}
 </script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function() {
-    navigator.serviceWorker.register("./sw.js")
-      .then(function() {
-        console.log("Service Worker registrato");
-      })
-      .catch(function(error) {
-        console.log("Errore Service Worker:", error);
-      });
-  });
-}
-</script>
-
-
-  
 </body>
 </html>
