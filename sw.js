@@ -1,4 +1,4 @@
-const CACHE_NAME = "tool-cerchiatura-v1";
+const CACHE_NAME = "tool-cerchiatura-v3";
 
 const FILES_TO_CACHE = [
   "./",
@@ -33,9 +33,23 @@ self.addEventListener("activate", function(event) {
 });
 
 self.addEventListener("fetch", function(event) {
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then(function(response) {
+        if (response && response.ok) {
+          const copy = response.clone();
+
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, copy);
+          });
+        }
+
+        return response;
+      })
+      .catch(function() {
+        return caches.match(event.request);
+      })
   );
 });
